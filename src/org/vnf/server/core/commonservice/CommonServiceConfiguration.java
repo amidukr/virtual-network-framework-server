@@ -1,8 +1,8 @@
-package org.vnf.server.commandprocessor.handlers;
+package org.vnf.server.core.commonservice;
 
-import org.vnf.server.commandprocessor.ConnectionLostHandler;
-import org.vnf.server.commandprocessor.InvokeHandler;
-import org.vnf.server.commandprocessor.ServiceCommandHandlers;
+import org.vnf.server.core.commandprocessor.ConnectionLostHandler;
+import org.vnf.server.core.commandprocessor.InvokeHandler;
+import org.vnf.server.core.commandprocessor.ServiceConfiguration;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,7 +10,7 @@ import java.util.Collection;
 /**
  * Created by qik on 6/4/2017.
  */
-public class CommonServiceHandlers implements ServiceCommandHandlers {
+public class CommonServiceConfiguration implements ServiceConfiguration {
 
     protected InvokeHandler createLoginHandler() {
         return new LoginCommandHandler();

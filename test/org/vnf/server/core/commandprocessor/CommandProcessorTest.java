@@ -1,9 +1,9 @@
-package org.vnf.server;
+package org.vnf.server.core.commandprocessor;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import org.vnf.server.commandprocessor.*;
-import org.vnf.server.commandprocessor.handlers.CommonServiceHandlers;
+import org.junit.Assert;
+import org.junit.Test;
+import org.vnf.server.Captor;
+import org.vnf.server.core.commonservice.CommonServiceConfiguration;
 
 import java.util.Arrays;
 
@@ -25,9 +25,48 @@ public class CommandProcessorTest {
             return "RESPONSE-TO-" + event.getCommandArgument() + "; endpointId = " + event.getEndpointId();
         }
     }
+
+    private static class ConnectionLostCaptor extends ConnectionLostHandler {
+
+        private final Captor<Boolean> eventFiredCaptor = new Captor<>(false);
+
+        private final Captor<CommandProcessor> commandProcessorCaptor = new Captor<>();
+        private final Captor<EndpointConnection> endpointConnectionCaptor = new Captor<>();
+        private final Captor<String> endpointIdCaptor = new Captor<>();
+
+
+        public ConnectionLostCaptor(AuthorizationType authorizationType) {
+            setAuthorizationType(authorizationType);
+        }
+
+        public Boolean getEventFired() {
+            return eventFiredCaptor.getValue();
+        }
+
+        public CommandProcessor getCapturedCommandProcessor() {
+            return commandProcessorCaptor.getValue();
+        }
+
+        public EndpointConnection getCapturedEndpointConnection() {
+            return endpointConnectionCaptor.getValue();
+        }
+
+        public String getCapturedEndpointId() {
+            return endpointIdCaptor.getValue();
+        }
+
+        @Override
+        public void onConnectionLost(ConnectionLostEvent connectionLostEvent) {
+            eventFiredCaptor.capture(true);
+
+            commandProcessorCaptor.capture(connectionLostEvent.getCommandProcessor());
+            endpointConnectionCaptor.capture(connectionLostEvent.getEndpointConnection());
+            endpointIdCaptor.capture(connectionLostEvent.getEndpointId());
+        }
+    }
     
     @Test
-    public void testMethodInvoke(){
+    public void testCommandInvoke(){
         CommandProcessor commandProcessor = new CommandProcessor();
 
         commandProcessor.addInvokeHandler(new EchoHandler("TEST-AUTH-ANY-COMMAND", AuthorizationType.ANY));
@@ -35,6 +74,7 @@ public class CommandProcessorTest {
         EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
 
         commandProcessor.remoteInvoke(endpointConnection, "1 TEST-AUTH-ANY-COMMAND\nREQUEST-COMMAND");
+
         Assert.assertEquals(endpointConnection.getCapturedMessages(),
                 Arrays.asList("1 TEST-AUTH-ANY-COMMAND\nRESPONSE-TO-REQUEST-COMMAND; endpointId = null"));
     }
@@ -56,7 +96,7 @@ public class CommandProcessorTest {
     public void testLoginRequest(){
         CommandProcessor commandProcessor = new CommandProcessor();
 
-        commandProcessor.addServiceHandlers(new CommonServiceHandlers());
+        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
 
         EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
 
@@ -69,7 +109,7 @@ public class CommandProcessorTest {
     public void testDoubleLoginRequest(){
         CommandProcessor commandProcessor = new CommandProcessor();
 
-        commandProcessor.addServiceHandlers(new CommonServiceHandlers());
+        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
 
         EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
 
@@ -88,7 +128,7 @@ public class CommandProcessorTest {
         CommandProcessor commandProcessor = new CommandProcessor();
 
 
-        commandProcessor.addServiceHandlers(new CommonServiceHandlers());
+        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
         commandProcessor.addInvokeHandler(new EchoHandler("TEST-AUTHENTICATED-ONLY-COMMAND", AuthorizationType.AUTHENTICATED_ONLY));
 
         EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
@@ -106,7 +146,7 @@ public class CommandProcessorTest {
         CommandProcessor commandProcessor = new CommandProcessor();
 
 
-        commandProcessor.addServiceHandlers(new CommonServiceHandlers());
+        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
 
         EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
 
@@ -123,7 +163,7 @@ public class CommandProcessorTest {
         CommandProcessor commandProcessor = new CommandProcessor();
 
 
-        commandProcessor.addServiceHandlers(new CommonServiceHandlers());
+        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
 
         EndpointConnectionCaptor endpoint1 = new EndpointConnectionCaptor();
         EndpointConnectionCaptor endpoint2 = new EndpointConnectionCaptor();
@@ -152,7 +192,7 @@ public class CommandProcessorTest {
         Captor<CommandProcessor> commandProcessorCaptor = new Captor<>();
         Captor<EndpointConnection> endpointConnectionCaptor = new Captor<>();
 
-        commandProcessor.addServiceHandlers(new CommonServiceHandlers());
+        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
         commandProcessor.addInvokeHandler(new InvokeHandler("COMMAND-NAME") {
 
             {
@@ -166,7 +206,7 @@ public class CommandProcessorTest {
                 commandProcessorCaptor.capture(event.getCommandProcessor());
                 endpointConnectionCaptor.capture(event.getEndpointConnection());
 
-                return "command-argument";
+                return "command-result";
             }
         });
 
@@ -178,10 +218,10 @@ public class CommandProcessorTest {
         commandProcessor.connectionLost(endpointConnection);
 
 
-        Assert.assertEquals(endpointIdCaptor.getValue(), "endpoint-1", "Asserting endpoint id");
-        Assert.assertEquals(commandArgumentCaptor.getValue(), "command-argument", "Asserting command argument");
-        Assert.assertEquals(commandProcessorCaptor.getValue(), commandProcessor, "Asserting command processor");
-        Assert.assertEquals(endpointConnectionCaptor.getValue(), endpointConnection, "Asserting endpoint connection");
+        Assert.assertEquals("Asserting endpoint id", endpointIdCaptor.getValue(), "endpoint-1");
+        Assert.assertEquals("Asserting command argument", commandArgumentCaptor.getValue(), "command-argument");
+        Assert.assertEquals("Asserting command processor", commandProcessorCaptor.getValue(), commandProcessor);
+        Assert.assertEquals("Asserting endpoint connection", endpointConnectionCaptor.getValue(), endpointConnection);
 
         Assert.assertEquals(endpointConnection.getCapturedMessages(), Arrays.asList(
                 "0 LOGIN\nOK",
@@ -192,17 +232,15 @@ public class CommandProcessorTest {
     public void testConnectionLost(){
         CommandProcessor commandProcessor = new CommandProcessor();
 
-        commandProcessor.addServiceHandlers(new CommonServiceHandlers());
+        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
 
+        final Captor<CommandProcessor> commandProcessorCaptor = new Captor<>();
+        final Captor<EndpointConnection> endpointConnectionCaptor = new Captor<>();
         final Captor<String> endpointIdCaptor = new Captor<>();
 
-        commandProcessor.addConnectionLostHandler(new ConnectionLostHandler(){
+        ConnectionLostCaptor handlerCaptor = new ConnectionLostCaptor(AuthorizationType.AUTHENTICATED_ONLY);
 
-            @Override
-            public void onConnectionLost(ConnectionLostEvent connectionLostEvent) {
-                endpointIdCaptor.capture(connectionLostEvent.getEndpointId());
-            }
-        });
+        commandProcessor.addConnectionLostHandler(handlerCaptor);
 
         EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
 
@@ -211,24 +249,117 @@ public class CommandProcessorTest {
         commandProcessor.connectionLost(endpointConnection);
 
         Assert.assertEquals(endpointConnection.getCapturedMessages(), Arrays.asList("0 LOGIN\nOK"));
-        Assert.assertEquals(endpointIdCaptor.getValue(), "endpoint-1", "Asserting endpoint id");
+        Assert.assertTrue("Verifying is handler captured event", handlerCaptor.getEventFired());
+        Assert.assertEquals("Asserting event command processor", handlerCaptor.getCapturedCommandProcessor(), commandProcessor);
+        Assert.assertEquals("Asserting endpoint connection captor", handlerCaptor.getCapturedEndpointConnection(), endpointConnection);
+        Assert.assertEquals("Asserting endpoint id", handlerCaptor.getCapturedEndpointId(), "endpoint-1");
+    }
+
+    @Test
+    public void testConnectionLostAuthType(){
+        CommandProcessor commandProcessor = new CommandProcessor();
+
+        ConnectionLostCaptor handlerAuthRequired = new ConnectionLostCaptor(AuthorizationType.AUTHENTICATED_ONLY);
+        ConnectionLostCaptor handlerAuthNonRequired = new ConnectionLostCaptor(AuthorizationType.ANY);
+
+        commandProcessor.addConnectionLostHandler(handlerAuthRequired);
+        commandProcessor.addConnectionLostHandler(handlerAuthNonRequired);
+
+        commandProcessor.connectionLost(new EndpointConnectionCaptor());
+
+        Assert.assertFalse("Verifying auth required handler haven't caught event", handlerAuthRequired.getEventFired());
+        Assert.assertTrue("Verifying auth non-required handler have caught event", handlerAuthNonRequired.getEventFired());
     }
 
     @Test
     public void testNullCommandArgument() {
-        throw new UnsupportedOperationException("TODO:...");
+        CommandProcessor commandProcessor = new CommandProcessor();
+
+        final Captor<String> commandArgumentCaptor = new Captor<>();
+
+        commandProcessor.addInvokeHandler(new InvokeHandler("TEST-COMMAND") {
+
+            {
+                setAuthorizationType(AuthorizationType.ANY);
+            }
+
+            @Override
+            public String handleCommand(CommandEvent event) throws CommandException {
+                commandArgumentCaptor.capture(event.getCommandArgument());
+
+                return "response";
+            }
+        });
+
+        EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
+
+        commandProcessor.remoteInvoke(endpointConnection, "1 TEST-COMMAND");
+
+        Assert.assertEquals("Verifying response", Arrays.asList("1 TEST-COMMAND\nresponse"), endpointConnection.getCapturedMessages());
+        Assert.assertNull("Verifying null command argument", commandArgumentCaptor.getValue());
     }
 
     @Test
     public void testNullCommandResponse() {
-        throw new UnsupportedOperationException("TODO:...");
+        CommandProcessor commandProcessor = new CommandProcessor();
+
+        final Captor<String> commandArgumentCaptor = new Captor<>();
+
+        commandProcessor.addInvokeHandler(new InvokeHandler("TEST-COMMAND") {
+
+            {
+                setAuthorizationType(AuthorizationType.ANY);
+            }
+
+            @Override
+            public String handleCommand(CommandEvent event) throws CommandException {
+                commandArgumentCaptor.capture(event.getCommandArgument());
+
+                return null;
+            }
+        });
+
+        EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
+
+        commandProcessor.remoteInvoke(endpointConnection, "1 TEST-COMMAND\ncommand-argument");
+
+        Assert.assertEquals("Verifying response", Arrays.asList("1 TEST-COMMAND"), endpointConnection.getCapturedMessages());
+        Assert.assertEquals("Verifying command argument", commandArgumentCaptor.getValue(), "command-argument");
+    }
+
+    @Test
+    public void testPushNull() {
+
+        CommandProcessor commandProcessor = new CommandProcessor();
+
+        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
+
+        EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
+
+        commandProcessor.remoteInvoke(endpointConnection, "0 LOGIN\nendpoint-1");
+
+        commandProcessor.pushMessage("endpoint-1", "PUSH-COMMAND", null);
+
+        Assert.assertEquals("Verifying response", Arrays.asList("0 LOGIN\nOK", "PUSH-COMMAND"), endpointConnection.getCapturedMessages());
+    }
+
+    @Test
+    public void testMalformedHeader() {
+        CommandProcessor commandProcessor = new CommandProcessor();
+
+        EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
+
+        commandProcessor.remoteInvoke(endpointConnection, "TEST-COMMAND\ncommand-argument");
+
+        Assert.assertEquals(endpointConnection.getCapturedMessages(), Arrays.asList(
+                "CALL_ERROR\nTEST-COMMAND\nCALL_FAILED_COMMAND_HEADER_MALFORMED"));
     }
 
     @Test
     public void testCheckedException() {
         CommandProcessor commandProcessor = new CommandProcessor();
 
-        commandProcessor.addInvokeHandler(new InvokeHandler("THROW-EXCEPTION-COMMAND") {
+        commandProcessor.addInvokeHandler(new InvokeHandler("TEST-COMMAND") {
 
             {
                 setAuthorizationType(AuthorizationType.ANY);
@@ -252,7 +383,7 @@ public class CommandProcessorTest {
     public void testRuntimeException() {
         CommandProcessor commandProcessor = new CommandProcessor();
 
-        commandProcessor.addInvokeHandler(new InvokeHandler("THROW-EXCEPTION-COMMAND") {
+        commandProcessor.addInvokeHandler(new InvokeHandler("TEST-COMMAND") {
 
             {
                 setAuthorizationType(AuthorizationType.ANY);

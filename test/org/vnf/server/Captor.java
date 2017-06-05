@@ -7,6 +7,12 @@ public class Captor<T> {
     private boolean captured;
     private T value;
 
+    public Captor(){}
+
+    public Captor(T defaultValue){
+        capture(defaultValue);
+    }
+
     public void capture(T value) {
         this.value = value;
         captured = true;

@@ -1,4 +1,4 @@
-package org.vnf.server.commandprocessor;
+package org.vnf.server.core.commandprocessor;
 
 /**
  * Created by qik on 6/4/2017.

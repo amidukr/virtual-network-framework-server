@@ -1,11 +1,11 @@
-package org.vnf.server.commandprocessor;
+package org.vnf.server.core.commandprocessor;
 
 import java.util.Collection;
 
 /**
  * Created by qik on 6/4/2017.
  */
-public interface ServiceCommandHandlers {
+public interface ServiceConfiguration {
     Collection<InvokeHandler> getInvokeHandlers();
     Collection<ConnectionLostHandler> getConnectionLostHandlers();
 }

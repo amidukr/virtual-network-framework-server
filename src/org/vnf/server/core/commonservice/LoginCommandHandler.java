@@ -1,9 +1,6 @@
-package org.vnf.server.commandprocessor.handlers;
+package org.vnf.server.core.commonservice;
 
-import org.vnf.server.CommandProcessor;
-import org.vnf.server.commandprocessor.CommandEvent;
-import org.vnf.server.commandprocessor.EndpointConnection;
-import org.vnf.server.commandprocessor.InvokeHandler;
+import org.vnf.server.core.commandprocessor.*;
 
 /**
  * Created by qik on 6/3/2017.
@@ -12,11 +9,8 @@ public class LoginCommandHandler extends InvokeHandler {
 
     public LoginCommandHandler() {
         super("LOGIN");
-    }
 
-    @Override
-    public boolean isAuthenticatedOnly() {
-        return false;
+        setAuthorizationType(AuthorizationType.ANY);
     }
 
     @Override

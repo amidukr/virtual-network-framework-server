@@ -1,7 +1,7 @@
-package org.vnf.server.commandprocessor.handlers;
+package org.vnf.server.core.commonservice;
 
-import org.vnf.server.commandprocessor.CommandEvent;
-import org.vnf.server.commandprocessor.InvokeHandler;
+import org.vnf.server.core.commandprocessor.CommandEvent;
+import org.vnf.server.core.commandprocessor.InvokeHandler;
 
 /**
  * Created by qik on 6/4/2017.
