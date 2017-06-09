@@ -143,7 +143,11 @@ public class CommandProcessor {
                 continue;
             }
 
-            connectionLostHandler.onConnectionLost(new ConnectionLostEvent(this, endpointConnection));
+            try{
+                connectionLostHandler.onConnectionLost(new ConnectionLostEvent(this, endpointConnection));
+            }catch (RuntimeException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -9,7 +9,7 @@ public class CommandEvent {
     private final EndpointConnection endpointConnection;
     private final String commandArgument;
 
-    CommandEvent(CommandProcessor commandProcessor, EndpointConnection endpointConnection, String commandArgument) {
+    public CommandEvent(CommandProcessor commandProcessor, EndpointConnection endpointConnection, String commandArgument) {
         this.endpointConnection = endpointConnection;
         this.commandProcessor = commandProcessor;
         this.commandArgument = commandArgument;

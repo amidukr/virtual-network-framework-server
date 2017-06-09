@@ -7,7 +7,7 @@ public class ConnectionLostEvent {
     private final CommandProcessor commandProcessor;
     private final EndpointConnection endpointConnection;
 
-    ConnectionLostEvent(CommandProcessor commandProcessor, EndpointConnection endpointConnection) {
+    public ConnectionLostEvent(CommandProcessor commandProcessor, EndpointConnection endpointConnection) {
         this.commandProcessor = commandProcessor;
         this.endpointConnection = endpointConnection;
     }
