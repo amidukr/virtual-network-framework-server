@@ -1,6 +1,7 @@
 package org.vnf.server.core.servicefactory;
 
 import org.vnf.server.core.commandprocessor.*;
+import org.vnf.server.core.commonservice.CommonServiceConfiguration;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -57,5 +58,20 @@ public class ServiceConfigurationFactory {
                 addOnConnectionLost(serviceObject, method);
             }
         }
+    }
+
+    public static CommandProcessor createCommandProcessor(Object ... services) {
+        CommandProcessor commandProcessor = new CommandProcessor();
+
+        ServiceConfigurationFactory factory = new ServiceConfigurationFactory();
+
+        for (Object service : services) {
+            factory.addService(service);
+        }
+
+        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
+        commandProcessor.addServiceHandlers(factory.create());
+
+        return commandProcessor;
     }
 }
