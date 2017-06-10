@@ -37,7 +37,7 @@ public class ServiceHandlersConfigurationFactoryTest {
 
         @Invoke(value = "commandThrowRuntime", authorizationType = AuthorizationType.ANY)
         public String throwRuntime(CommandEvent event) {
-            throw new RuntimeException("Runtime Exception");
+            throw new RuntimeException("TEST-RUNTIME-EXCEPTION");
         }
 
         @Invoke(value = "commandThrowCommandException", authorizationType = AuthorizationType.ANY)
@@ -48,13 +48,13 @@ public class ServiceHandlersConfigurationFactoryTest {
         @OnConnectionLost
         public void onConnectionLostDefault(ConnectionLostEvent event){
             capturedMessages.add("onConnectionLostDefault: " + event.getEndpointId());
-            throw new RuntimeException("Unexpected error");
+            throw new RuntimeException("TEST-EXCEPTION");
         }
 
         @OnConnectionLost(authorizationType = AuthorizationType.AUTHENTICATED_ONLY)
         public void onConnectionLostAuth(ConnectionLostEvent event){
             capturedMessages.add("onConnectionLostAuth: " + event.getEndpointId());
-            throw new RuntimeException("Unexpected error");
+            throw new RuntimeException("TEST-EXCEPTION");
         }
 
         @OnConnectionLost(authorizationType = AuthorizationType.ANY)
