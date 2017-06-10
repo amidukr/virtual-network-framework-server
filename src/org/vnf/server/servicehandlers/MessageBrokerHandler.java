@@ -1,4 +1,4 @@
-package org.vnf.server.services;
+package org.vnf.server.servicehandlers;
 
 import org.vnf.server.core.commandprocessor.CommandEvent;
 import org.vnf.server.core.commandprocessor.CommandProcessor;
@@ -10,7 +10,7 @@ import static org.vnf.server.core.commandprocessor.InvocationResult.failed;
 /**
  * Created by qik on 6/10/2017.
  */
-public class MessageBrokerService {
+public class MessageBrokerHandler {
 
     @Invoke("SEND_TO_ENDPOINT")
     public InvocationResult sendToEndpoint(CommandEvent event) {

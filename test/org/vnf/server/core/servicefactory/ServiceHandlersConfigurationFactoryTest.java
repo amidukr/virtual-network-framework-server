@@ -3,7 +3,7 @@ package org.vnf.server.core.servicefactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.vnf.server.core.commandprocessor.*;
-import org.vnf.server.core.commonservice.CommonServiceConfiguration;
+import org.vnf.server.core.commonservice.CommonServiceHandlersConfiguration;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 /**
  * Created by qik on 6/9/2017.
  */
-public class ServiceConfigurationFactoryTest {
+public class ServiceHandlersConfigurationFactoryTest {
     public class MockService {
 
         private final List<String> capturedMessages = new ArrayList<>();
@@ -69,10 +69,10 @@ public class ServiceConfigurationFactoryTest {
 
         factory.addService(new MockService());
 
-        ServiceConfiguration serviceConfiguration = factory.create();
+        ServiceHandlersConfiguration serviceHandlersConfiguration = factory.create();
 
 
-        List<MethodInvokeHandler> invokeHandlers = convertToList(MethodInvokeHandler.class, serviceConfiguration.getInvokeHandlers());
+        List<MethodInvokeHandler> invokeHandlers = convertToList(MethodInvokeHandler.class, serviceHandlersConfiguration.getInvokeHandlers());
 
         Map<String, MethodInvokeHandler> invokeMap = invokeHandlers.stream().collect(Collectors.toMap(item -> item.getMethod().getName(), item -> item));
 
@@ -102,11 +102,11 @@ public class ServiceConfigurationFactoryTest {
 
         factory.addService(new MockService());
 
-        ServiceConfiguration serviceConfiguration = factory.create();
+        ServiceHandlersConfiguration serviceHandlersConfiguration = factory.create();
 
 
 
-        List<MethodConnectionLostHandler> connectionLostHandlers = convertToList(MethodConnectionLostHandler.class, serviceConfiguration.getConnectionLostHandlers());
+        List<MethodConnectionLostHandler> connectionLostHandlers = convertToList(MethodConnectionLostHandler.class, serviceHandlersConfiguration.getConnectionLostHandlers());
 
         Map<String, MethodConnectionLostHandler> handlerMap = connectionLostHandlers.stream().collect(Collectors.toMap(item -> item.getMethod().getName(), item -> item));
 
@@ -137,7 +137,7 @@ public class ServiceConfigurationFactoryTest {
         try{
             factory.addService(serviceObject);
         }catch (ServiceConfigurationException e) {
-            Assert.assertEquals("Method org.vnf.server.core.servicefactory.ServiceConfigurationFactoryTest$1::invokeCommand should return String or InvocationResult", e.getMessage());
+            Assert.assertEquals("Method org.vnf.server.core.servicefactory.ServiceHandlersConfigurationFactoryTest$1::invokeCommand should return String or InvocationResult", e.getMessage());
             throw e;
         }
     }
@@ -156,7 +156,7 @@ public class ServiceConfigurationFactoryTest {
         try{
             factory.addService(serviceObject);
         }catch (ServiceConfigurationException e) {
-            Assert.assertEquals("Method org.vnf.server.core.servicefactory.ServiceConfigurationFactoryTest$2::invokeCommand should have only one CommandEvent argument", e.getMessage());
+            Assert.assertEquals("Method org.vnf.server.core.servicefactory.ServiceHandlersConfigurationFactoryTest$2::invokeCommand should have only one CommandEvent argument", e.getMessage());
             throw e;
         }
 
@@ -174,7 +174,7 @@ public class ServiceConfigurationFactoryTest {
         try{
             factory.addService(serviceObject);
         }catch (ServiceConfigurationException e) {
-            Assert.assertEquals("Method org.vnf.server.core.servicefactory.ServiceConfigurationFactoryTest$3::onConnectionLost should have only one ConnectionLostEvent argument", e.getMessage());
+            Assert.assertEquals("Method org.vnf.server.core.servicefactory.ServiceHandlersConfigurationFactoryTest$3::onConnectionLost should have only one ConnectionLostEvent argument", e.getMessage());
             throw e;
         }
     }
@@ -243,7 +243,7 @@ public class ServiceConfigurationFactoryTest {
         CommandProcessor processor = new CommandProcessor();
 
         processor.addServiceHandlers(factory.create());
-        processor.addServiceHandlers(new CommonServiceConfiguration());
+        processor.addServiceHandlers(new CommonServiceHandlersConfiguration());
 
         EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
 

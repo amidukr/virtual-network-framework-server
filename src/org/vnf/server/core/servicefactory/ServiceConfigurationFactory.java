@@ -1,7 +1,7 @@
 package org.vnf.server.core.servicefactory;
 
 import org.vnf.server.core.commandprocessor.*;
-import org.vnf.server.core.commonservice.CommonServiceConfiguration;
+import org.vnf.server.core.commonservice.CommonServiceHandlersConfiguration;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -16,8 +16,8 @@ public class ServiceConfigurationFactory {
     private final List<ConnectionLostHandler> connectionLostHandlers = new ArrayList<>();
 
 
-    public ServiceConfiguration create(){
-        return new ImmutableServiceConfiguration(invokeHandlers, connectionLostHandlers);
+    public ServiceHandlersConfiguration create(){
+        return new ImmutableHandlersConfiguration(invokeHandlers, connectionLostHandlers);
     }
 
     private void addMethodInvoke(Object target, Method method) {
@@ -69,7 +69,7 @@ public class ServiceConfigurationFactory {
             factory.addService(service);
         }
 
-        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
+        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
         commandProcessor.addServiceHandlers(factory.create());
 
         return commandProcessor;

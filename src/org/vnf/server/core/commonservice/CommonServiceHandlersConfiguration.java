@@ -2,7 +2,7 @@ package org.vnf.server.core.commonservice;
 
 import org.vnf.server.core.commandprocessor.ConnectionLostHandler;
 import org.vnf.server.core.commandprocessor.InvokeHandler;
-import org.vnf.server.core.commandprocessor.ServiceConfiguration;
+import org.vnf.server.core.commandprocessor.ServiceHandlersConfiguration;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,7 +10,7 @@ import java.util.Collection;
 /**
  * Created by qik on 6/4/2017.
  */
-public class CommonServiceConfiguration implements ServiceConfiguration {
+public class CommonServiceHandlersConfiguration implements ServiceHandlersConfiguration {
 
     protected InvokeHandler createLoginHandler() {
         return new LoginCommandHandler();

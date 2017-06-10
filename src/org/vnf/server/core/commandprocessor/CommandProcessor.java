@@ -34,9 +34,9 @@ public class CommandProcessor {
         connectionLostHandlers.add(connectionLostHandler);
     }
 
-    public void addServiceHandlers(ServiceConfiguration serviceConfiguration) {
-        Collection<InvokeHandler> serviceInvokeHandlers = emptyIfNull(serviceConfiguration.getInvokeHandlers());
-        Collection<ConnectionLostHandler> serviceConnectionLostHandlers = emptyIfNull(serviceConfiguration.getConnectionLostHandlers());
+    public void addServiceHandlers(ServiceHandlersConfiguration serviceHandlersConfiguration) {
+        Collection<InvokeHandler> serviceInvokeHandlers = emptyIfNull(serviceHandlersConfiguration.getInvokeHandlers());
+        Collection<ConnectionLostHandler> serviceConnectionLostHandlers = emptyIfNull(serviceHandlersConfiguration.getConnectionLostHandlers());
 
         serviceInvokeHandlers.stream().forEach(this::addInvokeHandler);
         serviceConnectionLostHandlers.stream().forEach(this::addConnectionLostHandler);

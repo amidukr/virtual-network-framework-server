@@ -3,8 +3,7 @@ package org.vnf.server.core.commandprocessor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.vnf.server.Captor;
-import org.vnf.server.core.commonservice.CommonServiceConfiguration;
-import org.vnf.server.core.servicefactory.Invoke;
+import org.vnf.server.core.commonservice.CommonServiceHandlersConfiguration;
 
 import java.util.Arrays;
 
@@ -97,7 +96,7 @@ public class CommandProcessorTest {
     public void testLoginRequest(){
         CommandProcessor commandProcessor = new CommandProcessor();
 
-        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
+        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
 
         EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
 
@@ -110,7 +109,7 @@ public class CommandProcessorTest {
     public void testDoubleLoginRequest(){
         CommandProcessor commandProcessor = new CommandProcessor();
 
-        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
+        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
 
         EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
 
@@ -128,7 +127,7 @@ public class CommandProcessorTest {
     public void testLoginInUse(){
         CommandProcessor commandProcessor = new CommandProcessor();
 
-        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
+        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
 
         EndpointConnectionCaptor endpointConnection1 = new EndpointConnectionCaptor();
         EndpointConnectionCaptor endpointConnection2 = new EndpointConnectionCaptor();
@@ -145,7 +144,7 @@ public class CommandProcessorTest {
         CommandProcessor commandProcessor = new CommandProcessor();
 
 
-        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
+        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
         commandProcessor.addInvokeHandler(new EchoHandler("TEST-AUTHENTICATED-ONLY-COMMAND", AuthorizationType.AUTHENTICATED_ONLY));
 
         EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
@@ -163,7 +162,7 @@ public class CommandProcessorTest {
         CommandProcessor commandProcessor = new CommandProcessor();
 
 
-        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
+        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
 
         EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
 
@@ -180,7 +179,7 @@ public class CommandProcessorTest {
         CommandProcessor commandProcessor = new CommandProcessor();
 
 
-        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
+        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
 
         EndpointConnectionCaptor endpoint1 = new EndpointConnectionCaptor();
         EndpointConnectionCaptor endpoint2 = new EndpointConnectionCaptor();
@@ -209,7 +208,7 @@ public class CommandProcessorTest {
         Captor<CommandProcessor> commandProcessorCaptor = new Captor<>();
         Captor<EndpointConnection> endpointConnectionCaptor = new Captor<>();
 
-        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
+        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
         commandProcessor.addInvokeHandler(new InvokeHandler("COMMAND-NAME") {
 
             {
@@ -249,7 +248,7 @@ public class CommandProcessorTest {
     public void testConnectionLost(){
         CommandProcessor commandProcessor = new CommandProcessor();
 
-        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
+        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
 
         final Captor<CommandProcessor> commandProcessorCaptor = new Captor<>();
         final Captor<EndpointConnection> endpointConnectionCaptor = new Captor<>();
@@ -349,7 +348,7 @@ public class CommandProcessorTest {
 
         CommandProcessor commandProcessor = new CommandProcessor();
 
-        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
+        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
 
         EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
 

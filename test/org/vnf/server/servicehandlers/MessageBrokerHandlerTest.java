@@ -1,4 +1,4 @@
-package org.vnf.server.services;
+package org.vnf.server.servicehandlers;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,11 +11,11 @@ import java.util.Arrays;
 /**
  * Created by qik on 6/10/2017.
  */
-public class MessageBrokerServiceTest {
+public class MessageBrokerHandlerTest {
 
     @Test
     public void testSendToEndpointCommand() {
-        CommandProcessor processor = ServiceConfigurationFactory.createCommandProcessor(new MessageBrokerService());
+        CommandProcessor processor = ServiceConfigurationFactory.createCommandProcessor(new MessageBrokerHandler());
 
         EndpointConnectionCaptor endpointSender    = new EndpointConnectionCaptor();
         EndpointConnectionCaptor endpointRecipient = new EndpointConnectionCaptor();
@@ -38,7 +38,7 @@ public class MessageBrokerServiceTest {
 
     @Test
     public void testSendToSelf() {
-        CommandProcessor processor = ServiceConfigurationFactory.createCommandProcessor(new MessageBrokerService());
+        CommandProcessor processor = ServiceConfigurationFactory.createCommandProcessor(new MessageBrokerHandler());
 
         EndpointConnectionCaptor endpoint = new EndpointConnectionCaptor();
 
@@ -54,7 +54,7 @@ public class MessageBrokerServiceTest {
 
     @Test
     public void testMalformedMessage() {
-        CommandProcessor processor = ServiceConfigurationFactory.createCommandProcessor(new MessageBrokerService());
+        CommandProcessor processor = ServiceConfigurationFactory.createCommandProcessor(new MessageBrokerHandler());
 
         EndpointConnectionCaptor endpoint = new EndpointConnectionCaptor();
 
