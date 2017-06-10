@@ -28,7 +28,7 @@ public class LoginCommandHandler extends InvokeHandler {
         }
 
         if(!commandProcessor.authenticate(remoteConnection, endpointId)) {
-            return "NOT-OK";
+            return "NOT-OK-ALREADY-IN-USE";
         }
 
         return "OK";

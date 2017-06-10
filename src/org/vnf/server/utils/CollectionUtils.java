@@ -6,7 +6,7 @@ import java.util.Collections;
 /**
  * Created by qik on 6/5/2017.
  */
-public class CollectionUtils {
+public interface CollectionUtils {
     public static <T>Collection<T> emptyIfNull(Collection<T> collection) {
         return collection != null ? collection : Collections.emptyList();
     }

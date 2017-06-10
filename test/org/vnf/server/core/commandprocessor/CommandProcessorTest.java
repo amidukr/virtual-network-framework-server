@@ -124,6 +124,22 @@ public class CommandProcessorTest {
     }
 
     @Test
+    public void testLoginInUse(){
+        CommandProcessor commandProcessor = new CommandProcessor();
+
+        commandProcessor.addServiceHandlers(new CommonServiceConfiguration());
+
+        EndpointConnectionCaptor endpointConnection1 = new EndpointConnectionCaptor();
+        EndpointConnectionCaptor endpointConnection2 = new EndpointConnectionCaptor();
+
+        commandProcessor.remoteInvoke(endpointConnection1, "0 LOGIN\nendpoint");
+        commandProcessor.remoteInvoke(endpointConnection2, "0 LOGIN\nendpoint");
+
+        Assert.assertEquals(endpointConnection1.getCapturedMessages(), Arrays.asList("0 LOGIN\nOK"));
+        Assert.assertEquals(endpointConnection2.getCapturedMessages(), Arrays.asList("0 LOGIN\nNOT-OK-ALREADY-IN-USE"));
+    }
+
+    @Test
     public void testAuthorizationRequired(){
         CommandProcessor commandProcessor = new CommandProcessor();
 
