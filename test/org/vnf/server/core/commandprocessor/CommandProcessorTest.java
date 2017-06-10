@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.vnf.server.Captor;
 import org.vnf.server.core.commonservice.CommonServiceConfiguration;
+import org.vnf.server.core.servicefactory.Invoke;
 
 import java.util.Arrays;
 
@@ -21,8 +22,8 @@ public class CommandProcessorTest {
         }
 
         @Override
-        public String handleCommand(CommandEvent event) {
-            return "RESPONSE-TO-" + event.getCommandArgument() + "; endpointId = " + event.getEndpointId();
+        public InvocationResult handleCommand(CommandEvent event) {
+            return InvocationResult.succeed("RESPONSE-TO-" + event.getCommandArgument() + "; endpointId = " + event.getEndpointId());
         }
     }
 
@@ -216,13 +217,13 @@ public class CommandProcessorTest {
             }
 
             @Override
-            public String handleCommand(CommandEvent event) {
+            public InvocationResult handleCommand(CommandEvent event) {
                 endpointIdCaptor.capture(event.getEndpointId());
                 commandArgumentCaptor.capture(event.getCommandArgument());
                 commandProcessorCaptor.capture(event.getCommandProcessor());
                 endpointConnectionCaptor.capture(event.getEndpointConnection());
 
-                return "command-result";
+                return InvocationResult.succeed("command-result");
             }
         });
 
@@ -300,10 +301,10 @@ public class CommandProcessorTest {
             }
 
             @Override
-            public String handleCommand(CommandEvent event) throws CommandException {
+            public InvocationResult handleCommand(CommandEvent event)  {
                 commandArgumentCaptor.capture(event.getCommandArgument());
 
-                return "response";
+                return InvocationResult.succeed("response");
             }
         });
 
@@ -328,7 +329,7 @@ public class CommandProcessorTest {
             }
 
             @Override
-            public String handleCommand(CommandEvent event) throws CommandException {
+            public InvocationResult handleCommand(CommandEvent event) {
                 commandArgumentCaptor.capture(event.getCommandArgument());
 
                 return null;
@@ -382,8 +383,8 @@ public class CommandProcessorTest {
             }
 
             @Override
-            public String handleCommand(CommandEvent event) throws CommandException {
-                throw new CommandException("TEST-EXCEPTION");
+            public InvocationResult handleCommand(CommandEvent event) {
+                return InvocationResult.failed("TEST-EXCEPTION");
             }
         });
 
@@ -406,7 +407,7 @@ public class CommandProcessorTest {
             }
 
             @Override
-            public String handleCommand(CommandEvent event) {
+            public InvocationResult handleCommand(CommandEvent event) {
                 throw new RuntimeException("TEST-EXCEPTION");
             }
         });

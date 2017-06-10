@@ -22,8 +22,8 @@ public class ServiceConfigurationFactory {
 
     private void addMethodInvoke(Object target, Method method) {
 
-        if(method.getReturnType() != String.class) {
-            throw new ServiceConfigurationException(String.format("Method %s::%s should return String", method.getDeclaringClass().getName(), method.getName()));
+        if(method.getReturnType() != String.class && method.getReturnType() != InvocationResult.class ) {
+            throw new ServiceConfigurationException(String.format("Method %s::%s should return String or InvocationResult", method.getDeclaringClass().getName(), method.getName()));
         }
 
         if(method.getParameterCount() != 1 || method.getParameterTypes()[0] != CommandEvent.class) {

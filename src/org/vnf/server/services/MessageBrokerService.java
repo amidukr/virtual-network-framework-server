@@ -1,9 +1,11 @@
 package org.vnf.server.services;
 
 import org.vnf.server.core.commandprocessor.CommandEvent;
-import org.vnf.server.core.commandprocessor.CommandException;
 import org.vnf.server.core.commandprocessor.CommandProcessor;
+import org.vnf.server.core.commandprocessor.InvocationResult;
 import org.vnf.server.core.servicefactory.Invoke;
+
+import static org.vnf.server.core.commandprocessor.InvocationResult.failed;
 
 /**
  * Created by qik on 6/10/2017.
@@ -11,18 +13,18 @@ import org.vnf.server.core.servicefactory.Invoke;
 public class MessageBrokerService {
 
     @Invoke("SEND_TO_ENDPOINT")
-    public String sendToEndpoint(CommandEvent event) throws CommandException {
+    public InvocationResult sendToEndpoint(CommandEvent event) {
         CommandProcessor commandProcessor = event.getCommandProcessor();
         String commandArgument = event.getCommandArgument();
 
         if(commandArgument == null) {
-            throw new CommandException("SEND_TO_ENDPOINT_ARGUMENT_CANNOT_BE_NULL");
+            return failed("SEND_TO_ENDPOINT_ARGUMENT_CANNOT_BE_NULL");
         }
 
         int endOfLine = commandArgument.indexOf('\n');
 
         if(endOfLine == -1) {
-            throw new CommandException("SEND_TO_ENDPOINT_MALFORMED_ARGUMENT");
+            return failed("SEND_TO_ENDPOINT_MALFORMED_ARGUMENT");
         }
 
         String recipientEndpoint = commandArgument.substring(0, endOfLine);

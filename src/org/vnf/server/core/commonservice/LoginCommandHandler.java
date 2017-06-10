@@ -2,6 +2,8 @@ package org.vnf.server.core.commonservice;
 
 import org.vnf.server.core.commandprocessor.*;
 
+import static org.vnf.server.core.commandprocessor.InvocationResult.succeed;
+
 /**
  * Created by qik on 6/3/2017.
  */
@@ -14,23 +16,23 @@ public class LoginCommandHandler extends InvokeHandler {
     }
 
     @Override
-    public String handleCommand(CommandEvent event) {
+    public InvocationResult handleCommand(CommandEvent event) {
         CommandProcessor commandProcessor = event.getCommandProcessor();
         EndpointConnection remoteConnection = event.getEndpointConnection();
         String endpointId = event.getCommandArgument();
 
         if(remoteConnection.isAuthenticated()) {
             if(remoteConnection.getEndpointId().equals(endpointId)) {
-                return "OK";
+                return succeed("OK");
             }else{
-                return "NOT-OK-ALREADY-AUTHORIZED";
+                return succeed("NOT-OK-ALREADY-AUTHORIZED");
             }
         }
 
         if(!commandProcessor.authenticate(remoteConnection, endpointId)) {
-            return "NOT-OK-ALREADY-IN-USE";
+            return succeed("NOT-OK-ALREADY-IN-USE");
         }
 
-        return "OK";
+        return succeed("OK");
     }
 }

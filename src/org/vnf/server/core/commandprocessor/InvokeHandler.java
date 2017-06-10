@@ -23,5 +23,5 @@ public abstract class InvokeHandler {
         this.authorizationType = authorizationType;
     }
 
-    public abstract String handleCommand(CommandEvent event) throws CommandException;
+    public abstract InvocationResult handleCommand(CommandEvent event);
 }

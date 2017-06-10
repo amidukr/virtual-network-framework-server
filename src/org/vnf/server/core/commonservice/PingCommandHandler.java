@@ -1,6 +1,7 @@
 package org.vnf.server.core.commonservice;
 
 import org.vnf.server.core.commandprocessor.CommandEvent;
+import org.vnf.server.core.commandprocessor.InvocationResult;
 import org.vnf.server.core.commandprocessor.InvokeHandler;
 
 /**
@@ -13,7 +14,7 @@ public class PingCommandHandler extends InvokeHandler {
     }
 
     @Override
-    public String handleCommand(CommandEvent event) {
-        return null;
+    public InvocationResult handleCommand(CommandEvent event) {
+        return InvocationResult.succeed(null);
     }
 }

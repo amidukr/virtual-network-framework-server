@@ -72,7 +72,6 @@ public class CommandProcessor {
 
     public void remoteInvoke(EndpointConnection endpointConnection, String message) {
         int headerEolIndex = message.indexOf('\n');
-        int headerSpaceSplitIndex = message.indexOf(' ');
 
 
         String commandArgument;
@@ -86,38 +85,37 @@ public class CommandProcessor {
             commandArgument = null;
         }
 
+        int headerSpaceSplitIndex = header.indexOf(' ');
+
         if(headerSpaceSplitIndex == -1) {
             sendErrorMessage(endpointConnection, header, CALL_FAILED_COMMAND_HEADER_MALFORMED);
             return;
         }
 
         try {
-            String commandName;
-            if(headerEolIndex != -1) {
-                commandName = message.substring(headerSpaceSplitIndex + 1, headerEolIndex);
-            }else{
-                commandName = message.substring(headerSpaceSplitIndex + 1);
-            }
-
+            String commandName = header.substring(headerSpaceSplitIndex + 1);
 
             InvokeHandler invokeHandler = invokeHandlers.get(commandName);
 
-            if(invokeHandler == null) {
+            if (invokeHandler == null) {
                 sendErrorMessage(endpointConnection, header, CALL_FAILED_UNKNOWN_METHOD);
                 return;
             }
 
-            if(!endpointConnection.isAuthenticated() && invokeHandler.getAuthorizationType() == AuthorizationType.AUTHENTICATED_ONLY) {
+            if (!endpointConnection.isAuthenticated() && invokeHandler.getAuthorizationType() == AuthorizationType.AUTHENTICATED_ONLY) {
                 sendErrorMessage(endpointConnection, header, CALL_FAILED_AUTHENTICATION_REQUIRED);
                 return;
             }
 
-            String response = invokeHandler.handleCommand(new CommandEvent(this, endpointConnection, commandArgument));
-            sendSuccessMessage(endpointConnection, header, response);
+            InvocationResult response = invokeHandler.handleCommand(new CommandEvent(this, endpointConnection, commandArgument));
 
-        } catch (CommandException e) {
-            sendErrorMessage(endpointConnection, header, e.getMessage());
-        }catch (RuntimeException e) {
+            if (response == null || response.isSucceed()) {
+                sendSuccessMessage(endpointConnection, header, response != null ? response.getResult() : null);
+            } else {
+                sendErrorMessage(endpointConnection, header, response.getErrorReason());
+            }
+
+        } catch (RuntimeException e) {
             sendErrorMessage(endpointConnection, header, CALL_FAILED_UNEXPECTED_EXCEPTION);
             e.printStackTrace();
         }

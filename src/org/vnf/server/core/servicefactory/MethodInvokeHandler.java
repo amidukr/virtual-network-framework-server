@@ -2,7 +2,7 @@ package org.vnf.server.core.servicefactory;
 
 import org.vnf.server.core.commandprocessor.AuthorizationType;
 import org.vnf.server.core.commandprocessor.CommandEvent;
-import org.vnf.server.core.commandprocessor.CommandException;
+import org.vnf.server.core.commandprocessor.InvocationResult;
 import org.vnf.server.core.commandprocessor.InvokeHandler;
 
 import java.lang.reflect.InvocationTargetException;
@@ -28,21 +28,18 @@ public class MethodInvokeHandler extends InvokeHandler{
     }
 
     @Override
-    public String handleCommand(CommandEvent event) throws CommandException {
+    public InvocationResult handleCommand(CommandEvent event) {
         try {
-            return (String) method.invoke(target, event);
-        } catch (IllegalAccessException e) {
+            Object result = method.invoke(target, event);
+
+            if(result instanceof String) {
+                return InvocationResult.succeed((String)result);
+            }
+
+            return (InvocationResult) result;
+
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            if(e.getCause() instanceof CommandException) {
-                throw (CommandException)e.getCause();
-            }
-
-            if(e.getCause() instanceof RuntimeException) {
-                throw (RuntimeException) e.getCause();
-            }
-
-            throw new RuntimeException(e.getCause());
         }
     }
 }

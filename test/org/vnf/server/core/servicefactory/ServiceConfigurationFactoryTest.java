@@ -41,8 +41,8 @@ public class ServiceConfigurationFactoryTest {
         }
 
         @Invoke(value = "commandThrowCommandException", authorizationType = AuthorizationType.ANY)
-        public String throwCommandException(CommandEvent event) throws CommandException {
-            throw new CommandException("THROW_ERROR_REASON");
+        public InvocationResult throwCommandException(CommandEvent event) {
+            return InvocationResult.failed("THROW_ERROR_REASON");
         }
 
         @OnConnectionLost
@@ -137,7 +137,7 @@ public class ServiceConfigurationFactoryTest {
         try{
             factory.addService(serviceObject);
         }catch (ServiceConfigurationException e) {
-            Assert.assertEquals("Method org.vnf.server.core.servicefactory.ServiceConfigurationFactoryTest$1::invokeCommand should return String", e.getMessage());
+            Assert.assertEquals("Method org.vnf.server.core.servicefactory.ServiceConfigurationFactoryTest$1::invokeCommand should return String or InvocationResult", e.getMessage());
             throw e;
         }
     }
