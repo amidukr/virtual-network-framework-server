@@ -1,0 +1,1 @@
+include 'vnf-core', 'vnf-jetty', 'vnf-services'

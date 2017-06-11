@@ -1,0 +1,13 @@
+apply plugin: 'maven'
+apply plugin: 'java-library'
+
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    // Use JUnit test framework
+    testImplementation 'junit:junit:4.12'
+}
+

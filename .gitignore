@@ -1,0 +1,12 @@
+.gradle
+/*/.gradle
+
+*.iml
+/*/*.iml
+
+/.idea
+/vnf-core/build
+/vnf-jetty/build
+/vnf-services/build
+
+
