@@ -1,1 +1,1 @@
-include 'vnf-core', 'vnf-jetty', 'vnf-services'
+include 'vnf-core', 'vnf-jetty', 'vnf-websocket', 'vnf-services'

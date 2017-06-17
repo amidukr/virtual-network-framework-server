@@ -1,0 +1,20 @@
+apply plugin: 'java-library'
+
+repositories {
+    jcenter()
+}
+
+
+dependencies {
+    // This dependency is exported to consumers, that is to say found on their compile classpath.
+    api project(":vnf-core")
+
+    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
+    implementation 'javax.websocket:javax.websocket-api:1.1'
+    implementation 'org.eclipse.jetty.websocket:javax-websocket-server-impl:9.4.5+'
+
+    // Use JUnit test framework
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'ch.qos.logback:logback-classic:1.2.3'
+}
+

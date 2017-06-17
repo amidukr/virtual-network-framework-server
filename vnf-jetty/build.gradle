@@ -8,13 +8,15 @@ repositories {
 }
 
 dependencies {
-    // This dependency is found on compile classpath of this component and consumers.
     compile project(":vnf-services")
+    compile project(":vnf-websocket")
 
-    // Use JUnit test framework
-    testCompile 'junit:junit:4.12'
+    compile 'org.eclipse.jetty:jetty-server:9.4.5+'
+    compile 'org.eclipse.jetty.websocket:javax-websocket-server-impl:9.4.5+'
+    //compile 'org.eclipse.jetty.websocket:websocket-api::9.4.5+'
+
+
+    //compileOnly 'javax.websocket:javax.websocket-api:1.1'
 }
 
-// Define the main class for the application
-mainClassName = 'org.vnf.server.ServerLauncher'
-
+mainClassName = "org.vnf.server.ServerLauncher"

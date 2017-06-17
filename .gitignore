@@ -5,8 +5,9 @@
 /*/*.iml
 
 /.idea
-/vnf-core/build
-/vnf-jetty/build
-/vnf-services/build
+/*/build
 
 
+/temp-app
+/temp-lib
+/temp

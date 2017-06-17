@@ -1,4 +1,4 @@
-package org.vnf.server;
+package org.vnf.server.utils;
 
 /**
  * Created by qik on 6/4/2017.

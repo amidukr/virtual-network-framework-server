@@ -6,7 +6,7 @@ repositories {
 }
 
 dependencies {
-    compile project(":vnf-core")
+    api project(":vnf-core")
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'

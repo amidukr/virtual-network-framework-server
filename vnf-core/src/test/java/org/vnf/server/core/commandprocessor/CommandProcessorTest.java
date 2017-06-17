@@ -2,7 +2,7 @@ package org.vnf.server.core.commandprocessor;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.vnf.server.Captor;
+import org.vnf.server.utils.Captor;
 import org.vnf.server.core.commonservice.CommonServiceHandlersConfiguration;
 
 import java.util.Arrays;
