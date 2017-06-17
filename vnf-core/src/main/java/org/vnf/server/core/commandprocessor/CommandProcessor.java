@@ -1,5 +1,8 @@
 package org.vnf.server.core.commandprocessor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -9,6 +12,9 @@ import static org.vnf.server.utils.CollectionUtils.emptyIfNull;
  * Created by qik on 6/3/2017.
  */
 public class CommandProcessor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandProcessor.class);
+
     public static final String CALL_FAILED_COMMAND_HEADER_MALFORMED = "CALL_FAILED_COMMAND_HEADER_MALFORMED";
     public static final String CALL_FAILED_UNKNOWN_METHOD           = "CALL_FAILED_UNKNOWN_METHOD";
     public static final String CALL_FAILED_UNEXPECTED_EXCEPTION     = "CALL_FAILED_UNEXPECTED_EXCEPTION";
@@ -117,7 +123,7 @@ public class CommandProcessor {
 
         } catch (RuntimeException e) {
             sendErrorMessage(endpointConnection, header, CALL_FAILED_UNEXPECTED_EXCEPTION);
-            e.printStackTrace();
+            LOGGER.error("Unexpected exception during command processing", e);
         }
     }
 
@@ -144,7 +150,7 @@ public class CommandProcessor {
             try{
                 connectionLostHandler.onConnectionLost(new ConnectionLostEvent(this, endpointConnection));
             }catch (RuntimeException e) {
-                e.printStackTrace();
+                LOGGER.error("Unexpected exception in connectionLost handler", e);
             }
         }
     }
