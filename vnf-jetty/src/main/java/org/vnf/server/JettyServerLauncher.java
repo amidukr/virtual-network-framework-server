@@ -4,6 +4,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.jsr356.server.ServerContainer;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
+import org.vnf.server.core.commandprocessor.CommandProcessor;
+import org.vnf.server.endpoint.ProcessorWebSocketEndpoint;
 
 import javax.websocket.server.ServerEndpointConfig;
 
@@ -11,7 +13,7 @@ import javax.websocket.server.ServerEndpointConfig;
 /**
  * Created by qik on 6/11/2017.
  */
-public class ServerLauncher {
+public class JettyServerLauncher {
     public static void main(String[] args) throws Exception {
         Server server = new Server(8080);
 
@@ -21,17 +23,12 @@ public class ServerLauncher {
 
         ServerContainer container = WebSocketServerContainerInitializer.configureContext(context);
 
+        CommandProcessor commandProcessor = new CommandProcessor();
+        commandProcessor.addServiceHandlers(new VnfServiceHandlersFactory().create());
 
-
-        //jsr356 - less overhead in stacktrace - should be faster
-
-        ServerEndpointConfig endpointConfig = ServerEndpointConfig.Builder.create(WebSocketEndpoint.class, "/jsr356").build();
-
-        //endpointConfig.getUserProperties()
+        ServerEndpointConfig endpointConfig = ProcessorWebSocketEndpoint.createEndpointConfig(commandProcessor, "/vnf-ws");
 
         container.addEndpoint(endpointConfig);
-
-        context.addServlet(JettyWS.class, "/jetty");
 
         server.start();
         server.join();

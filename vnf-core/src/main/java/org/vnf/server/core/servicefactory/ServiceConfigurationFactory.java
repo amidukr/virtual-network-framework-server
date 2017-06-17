@@ -5,7 +5,10 @@ import org.vnf.server.core.commonservice.CommonServiceHandlersConfiguration;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import static org.vnf.server.utils.CollectionUtils.emptyIfNull;
 
 /**
  * Created by qik on 6/9/2017.
@@ -20,6 +23,8 @@ public class ServiceConfigurationFactory {
         return new ImmutableHandlersConfiguration(invokeHandlers, connectionLostHandlers);
     }
 
+
+
     private void addMethodInvoke(Object target, Method method) {
 
         if(method.getReturnType() != String.class && method.getReturnType() != InvocationResult.class ) {
@@ -32,7 +37,7 @@ public class ServiceConfigurationFactory {
 
         Invoke invokeAnnotation = method.getAnnotation(Invoke.class);
 
-        invokeHandlers.add(new MethodInvokeHandler(invokeAnnotation.value(), invokeAnnotation.authorizationType(),target, method));
+        invokeHandlers.add(new MethodInvokeHandler(invokeAnnotation.value(), invokeAnnotation.authorizationType(), target, method));
     }
 
     private void addOnConnectionLost(Object target, Method method) {
@@ -57,6 +62,19 @@ public class ServiceConfigurationFactory {
             if(method.isAnnotationPresent(OnConnectionLost.class)) {
                 addOnConnectionLost(serviceObject, method);
             }
+        }
+    }
+
+    public void addServiceHandlersConfiguration(ServiceHandlersConfiguration serviceHandlersConfiguration) {
+        Collection<InvokeHandler> invokeHandlers = emptyIfNull(serviceHandlersConfiguration.getInvokeHandlers());
+        Collection<ConnectionLostHandler> connectionLostHandlers = emptyIfNull(serviceHandlersConfiguration.getConnectionLostHandlers());
+
+        for (InvokeHandler invokeHandler : invokeHandlers) {
+            this.invokeHandlers.add(invokeHandler);
+        }
+
+        for (ConnectionLostHandler connectionLostHandler : connectionLostHandlers) {
+            this.connectionLostHandlers.add(connectionLostHandler);
         }
     }
 

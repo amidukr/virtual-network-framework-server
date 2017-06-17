@@ -55,7 +55,7 @@ public class ProcessorWebSocketEndpoint extends Endpoint {
         LOGGER.error("Session:onError", thr);
     }
 
-    public static EndpointConfig createEndpointConfig(CommandProcessor commandProcessor, String path) {
+    public static ServerEndpointConfig createEndpointConfig(CommandProcessor commandProcessor, String path) {
         ServerEndpointConfig endpointConfig = ServerEndpointConfig.Builder.create(ProcessorWebSocketEndpoint.class, path).build();
         endpointConfig.getUserProperties().put(COMMAND_PROCESSOR, commandProcessor);
 

@@ -13,10 +13,7 @@ dependencies {
 
     compile 'org.eclipse.jetty:jetty-server:9.4.5+'
     compile 'org.eclipse.jetty.websocket:javax-websocket-server-impl:9.4.5+'
-    //compile 'org.eclipse.jetty.websocket:websocket-api::9.4.5+'
-
-
-    //compileOnly 'javax.websocket:javax.websocket-api:1.1'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
 }
 
-mainClassName = "org.vnf.server.ServerLauncher"
+mainClassName = "org.vnf.server.JettyServerLauncher"
