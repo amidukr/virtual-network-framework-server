@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.vnf.server.core.commandprocessor.CommandProcessor;
 import org.vnf.server.core.commandprocessor.EndpointConnectionCaptor;
+import org.vnf.server.core.commonservice.CommonServiceHandlersConfiguration;
 import org.vnf.server.core.servicefactory.ServiceConfigurationFactory;
 
 import java.util.Arrays;
@@ -13,9 +14,13 @@ import java.util.Arrays;
  */
 public class MessageBrokerHandlerTest {
 
+    private CommandProcessor createCommandProcessor() {
+        return ServiceConfigurationFactory.createCommandProcessor(new CommonServiceHandlersConfiguration(), new MessageBrokerHandler());
+    }
+
     @Test
     public void testSendToEndpointCommand() {
-        CommandProcessor processor = ServiceConfigurationFactory.createCommandProcessor(new MessageBrokerHandler());
+        CommandProcessor processor = createCommandProcessor();
 
         EndpointConnectionCaptor endpointSender    = new EndpointConnectionCaptor();
         EndpointConnectionCaptor endpointRecipient = new EndpointConnectionCaptor();
@@ -38,7 +43,7 @@ public class MessageBrokerHandlerTest {
 
     @Test
     public void testSendToSelf() {
-        CommandProcessor processor = ServiceConfigurationFactory.createCommandProcessor(new MessageBrokerHandler());
+        CommandProcessor processor = createCommandProcessor();
 
         EndpointConnectionCaptor endpoint = new EndpointConnectionCaptor();
 
@@ -54,7 +59,7 @@ public class MessageBrokerHandlerTest {
 
     @Test
     public void testMalformedMessage() {
-        CommandProcessor processor = ServiceConfigurationFactory.createCommandProcessor(new MessageBrokerHandler());
+        CommandProcessor processor = createCommandProcessor();
 
         EndpointConnectionCaptor endpoint = new EndpointConnectionCaptor();
 

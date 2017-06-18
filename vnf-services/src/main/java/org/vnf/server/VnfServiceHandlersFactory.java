@@ -11,7 +11,6 @@ import org.vnf.server.servicehandlers.StoreServiceHandlers;
 public class VnfServiceHandlersFactory extends ServiceConfigurationFactory {
     public VnfServiceHandlersFactory() {
 
-        addServiceHandlersConfiguration(new CommonServiceHandlersConfiguration());
         addService(new MessageBrokerHandler());
         addService(new StoreServiceHandlers());
     }

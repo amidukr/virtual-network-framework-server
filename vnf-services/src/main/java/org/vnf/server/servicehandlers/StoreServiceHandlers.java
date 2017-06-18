@@ -5,6 +5,7 @@ import org.vnf.server.core.commandprocessor.ConnectionLostEvent;
 import org.vnf.server.core.commandprocessor.InvocationResult;
 import org.vnf.server.core.servicefactory.Invoke;
 import org.vnf.server.core.servicefactory.OnConnectionLost;
+import org.vnf.server.core.servicefactory.ServiceObject;
 import org.vnf.server.repository.entities.StoreEntry;
 import org.vnf.server.service.StoreServiceErrorCode;
 import org.vnf.server.service.StoreService;
@@ -15,7 +16,7 @@ import java.util.Map;
 /**
  * Created by qik on 6/10/2017.
  */
-public class StoreServiceHandlers {
+public class StoreServiceHandlers implements ServiceObject {
     private static final String STORE_SERVICE_COMMAND_FAILED_MALFORMED_FORMAT = "STORE_SERVICE_COMMAND_FAILED_MALFORMED_FORMAT";
 
     private final StoreService storeService = new StoreService();

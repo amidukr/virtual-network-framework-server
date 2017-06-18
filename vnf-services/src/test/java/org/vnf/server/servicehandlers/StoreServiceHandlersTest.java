@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.vnf.server.core.commandprocessor.CommandProcessor;
 import org.vnf.server.core.commandprocessor.EndpointConnectionCaptor;
+import org.vnf.server.core.commonservice.CommonServiceHandlersConfiguration;
 import org.vnf.server.core.servicefactory.ServiceConfigurationFactory;
 import org.vnf.server.repository.StoreRepository;
 
@@ -14,7 +15,9 @@ import java.util.Arrays;
  */
 public class StoreServiceHandlersTest {
 
-
+    private CommandProcessor createCommandProcessor() {
+        return ServiceConfigurationFactory.createCommandProcessor(new CommonServiceHandlersConfiguration(), new StoreServiceHandlers());
+    }
 
 
     @Test
@@ -53,10 +56,6 @@ public class StoreServiceHandlersTest {
                         "2 CREATE-OR-UPDATE-ENTRY\nOK",
                         "3 GET-ENTRY\nentry-value2"),
                 endpoint.getCapturedMessages());
-    }
-
-    private CommandProcessor createCommandProcessor() {
-        return ServiceConfigurationFactory.createCommandProcessor(new StoreServiceHandlers());
     }
 
     @Test

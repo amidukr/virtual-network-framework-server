@@ -12,6 +12,10 @@ import java.util.Collection;
  */
 public class CommonServiceHandlersConfiguration implements ServiceHandlersConfiguration {
 
+    protected InvokeHandler createHelpHandler() {
+        return new HelpCommandHandler();
+    }
+
     protected InvokeHandler createLoginHandler() {
         return new LoginCommandHandler();
     }
@@ -22,7 +26,10 @@ public class CommonServiceHandlersConfiguration implements ServiceHandlersConfig
 
     @Override
     public Collection<InvokeHandler> getInvokeHandlers() {
-        return Arrays.asList(createLoginHandler(), createPingHandler());
+        return Arrays.asList(
+                createHelpHandler(),
+                createLoginHandler(),
+                createPingHandler());
     }
 
     @Override

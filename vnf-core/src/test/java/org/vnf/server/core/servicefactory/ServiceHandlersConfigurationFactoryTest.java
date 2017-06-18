@@ -4,15 +4,20 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.vnf.server.core.commandprocessor.*;
 import org.vnf.server.core.commonservice.CommonServiceHandlersConfiguration;
+import org.vnf.server.mocks.ConnectionLostCaptor;
+import org.vnf.server.mocks.EchoHandler;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 /**
  * Created by qik on 6/9/2017.
  */
 public class ServiceHandlersConfigurationFactoryTest {
-    public class MockService {
+
+    private static class MockService implements ServiceObject{
 
         private final List<String> capturedMessages = new ArrayList<>();
 
@@ -80,7 +85,7 @@ public class ServiceHandlersConfigurationFactoryTest {
         methods.sort(Comparator.comparing(String::toString));
 
         Assert.assertEquals("Found methods",
-                Arrays.asList("invokeAny", "invokeAuthDefault", "invokeAuthOnly", "throwCommandException", "throwRuntime"),
+                asList("invokeAny", "invokeAuthDefault", "invokeAuthOnly", "throwCommandException", "throwRuntime"),
                 new ArrayList(methods));
 
         Assert.assertEquals(AuthorizationType.AUTHENTICATED_ONLY, invokeMap.get("invokeAuthDefault").getAuthorizationType());
@@ -114,7 +119,7 @@ public class ServiceHandlersConfigurationFactoryTest {
         methods.sort(Comparator.comparing(String::toString));
 
         Assert.assertEquals("Found methods",
-                Arrays.asList("onConnectionLostAny", "onConnectionLostAuth", "onConnectionLostDefault"),
+                asList("onConnectionLostAny", "onConnectionLostAuth", "onConnectionLostDefault"),
                 methods);
 
         Assert.assertEquals(AuthorizationType.ANY, handlerMap.get("onConnectionLostAny").getAuthorizationType());
@@ -125,7 +130,7 @@ public class ServiceHandlersConfigurationFactoryTest {
 
     @Test(expected = ServiceConfigurationException.class)
     public void testInvokeReturnTypeInitializationException() {
-        Object serviceObject = new Object() {
+        ServiceObject serviceObject = new ServiceObject() {
             @Invoke("invokeCommand")
             public void invokeCommand(CommandEvent event) {
 
@@ -144,7 +149,7 @@ public class ServiceHandlersConfigurationFactoryTest {
 
     @Test(expected = ServiceConfigurationException.class)
          public void testInvokeArgumentInitializationException() {
-        Object serviceObject = new Object() {
+        ServiceObject serviceObject = new ServiceObject() {
             @Invoke("invokeCommand")
             public String invokeCommand(Object event) {
                 return null;
@@ -164,7 +169,7 @@ public class ServiceHandlersConfigurationFactoryTest {
 
     @Test(expected = ServiceConfigurationException.class)
     public void testConnectionLostArgumentInitializationException() {
-        Object serviceObject = new Object() {
+        ServiceObject serviceObject = new ServiceObject() {
             @OnConnectionLost
             public void onConnectionLost(Object event) {}
         };
@@ -177,6 +182,42 @@ public class ServiceHandlersConfigurationFactoryTest {
             Assert.assertEquals("Method org.vnf.server.core.servicefactory.ServiceHandlersConfigurationFactoryTest$3::onConnectionLost should have only one ConnectionLostEvent argument", e.getMessage());
             throw e;
         }
+    }
+
+    @Test
+    public void testAddHandler() {
+        ServiceObject mockService = new ServiceObject(){
+            @Invoke("echo-handler-3")
+            public String echoHandler3(CommandEvent event) {
+                return null;
+            }
+        };
+
+        ServiceConfigurationFactory factory = new ServiceConfigurationFactory();
+
+        factory.addHandler(new EchoHandler("echo-handler-1", AuthorizationType.ANY));
+        factory.addHandler(new ConnectionLostCaptor("connection-lost-1", AuthorizationType.ANY));
+
+        factory.addHandler(new ImmutableHandlersConfiguration(
+                asList(new EchoHandler("echo-handler-2", AuthorizationType.ANY)),
+                asList(new ConnectionLostCaptor("connection-lost-2", AuthorizationType.ANY))));
+
+        factory.addHandler(mockService);
+
+        ServiceHandlersConfiguration serviceHandlersConfiguration = factory.create();
+
+        List<String> invokeHandlers = serviceHandlersConfiguration.getInvokeHandlers().stream()
+                .map(InvokeHandler::getCommandName)
+                .sorted()
+                .collect(Collectors.toList());
+
+        List<String> connectionLostHandlers = serviceHandlersConfiguration.getConnectionLostHandlers().stream()
+                .map(x -> ((ConnectionLostCaptor) x).getHandlerId())
+                .sorted()
+                .collect(Collectors.toList());
+
+        Assert.assertEquals("Verifying invoke handlers list", Arrays.asList("echo-handler-1", "echo-handler-2", "echo-handler-3"), invokeHandlers);
+        Assert.assertEquals("Verifying connection lost handlers list", Arrays.asList("connection-lost-1", "connection-lost-2"), connectionLostHandlers);
     }
 
     @Test
@@ -194,7 +235,18 @@ public class ServiceHandlersConfigurationFactoryTest {
 
         processor.remoteInvoke(endpointConnection, "1 commandInvokeAny\nargument");
 
-        Assert.assertEquals(Arrays.asList("1 commandInvokeAny\nresult-invokeAny-argument"), endpointConnection.getCapturedMessages());
+        Assert.assertEquals(asList("1 commandInvokeAny\nresult-invokeAny-argument"), endpointConnection.getCapturedMessages());
+    }
+
+    @Test
+    public void tesFactoryProcessorCreateMethod(){
+        CommandProcessor processor = ServiceConfigurationFactory.createCommandProcessor(new MockService());
+
+        EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
+
+        processor.remoteInvoke(endpointConnection, "1 commandInvokeAny\nargument");
+
+        Assert.assertEquals(asList("1 commandInvokeAny\nresult-invokeAny-argument"), endpointConnection.getCapturedMessages());
     }
 
     @Test
@@ -212,7 +264,7 @@ public class ServiceHandlersConfigurationFactoryTest {
 
         processor.remoteInvoke(endpointConnection, "1 commandThrowRuntime\nargument");
 
-        Assert.assertEquals(Arrays.asList("CALL_ERROR\n1 commandThrowRuntime\nCALL_FAILED_UNEXPECTED_EXCEPTION"), endpointConnection.getCapturedMessages());
+        Assert.assertEquals(asList("CALL_ERROR\n1 commandThrowRuntime\nCALL_FAILED_UNEXPECTED_EXCEPTION"), endpointConnection.getCapturedMessages());
     }
 
     @Test
@@ -230,7 +282,7 @@ public class ServiceHandlersConfigurationFactoryTest {
 
         processor.remoteInvoke(endpointConnection, "1 commandThrowCommandException\nargument");
 
-        Assert.assertEquals(Arrays.asList("CALL_ERROR\n1 commandThrowCommandException\nTHROW_ERROR_REASON"), endpointConnection.getCapturedMessages());
+        Assert.assertEquals(asList("CALL_ERROR\n1 commandThrowCommandException\nTHROW_ERROR_REASON"), endpointConnection.getCapturedMessages());
     }
 
     @Test
@@ -254,7 +306,7 @@ public class ServiceHandlersConfigurationFactoryTest {
         List<String> capturedMessages = serviceObject.getCapturedMessages();
         capturedMessages.sort(Comparator.comparing(String::toString));
 
-        Assert.assertEquals(Arrays.asList("onConnectionLostAny: endpoint", "onConnectionLostAuth: endpoint", "onConnectionLostDefault: endpoint"), capturedMessages);
+        Assert.assertEquals(asList("onConnectionLostAny: endpoint", "onConnectionLostAuth: endpoint", "onConnectionLostDefault: endpoint"), capturedMessages);
     }
 
     private static <T> List<T> convertToList(Class<T> clazz, Collection<? super T> sourceList) {

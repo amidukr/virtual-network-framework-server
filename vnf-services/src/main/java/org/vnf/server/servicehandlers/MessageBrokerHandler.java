@@ -4,13 +4,14 @@ import org.vnf.server.core.commandprocessor.CommandEvent;
 import org.vnf.server.core.commandprocessor.CommandProcessor;
 import org.vnf.server.core.commandprocessor.InvocationResult;
 import org.vnf.server.core.servicefactory.Invoke;
+import org.vnf.server.core.servicefactory.ServiceObject;
 
 import static org.vnf.server.core.commandprocessor.InvocationResult.failed;
 
 /**
  * Created by qik on 6/10/2017.
  */
-public class MessageBrokerHandler {
+public class MessageBrokerHandler implements ServiceObject {
 
     @Invoke("SEND_TO_ENDPOINT")
     public InvocationResult sendToEndpoint(CommandEvent event) {

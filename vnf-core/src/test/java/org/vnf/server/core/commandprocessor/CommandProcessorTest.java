@@ -2,6 +2,8 @@ package org.vnf.server.core.commandprocessor;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.vnf.server.mocks.ConnectionLostCaptor;
+import org.vnf.server.mocks.EchoHandler;
 import org.vnf.server.utils.Captor;
 import org.vnf.server.core.commonservice.CommonServiceHandlersConfiguration;
 
@@ -12,59 +14,6 @@ import java.util.Arrays;
  */
 public class CommandProcessorTest {
 
-    private static class EchoHandler extends InvokeHandler {
-
-        public EchoHandler(String commandName, AuthorizationType authorizationType) {
-            super(commandName);
-
-            setAuthorizationType(authorizationType);
-        }
-
-        @Override
-        public InvocationResult handleCommand(CommandEvent event) {
-            return InvocationResult.succeed("RESPONSE-TO-" + event.getCommandArgument() + "; endpointId = " + event.getEndpointId());
-        }
-    }
-
-    private static class ConnectionLostCaptor extends ConnectionLostHandler {
-
-        private final Captor<Boolean> eventFiredCaptor = new Captor<>(false);
-
-        private final Captor<CommandProcessor> commandProcessorCaptor = new Captor<>();
-        private final Captor<EndpointConnection> endpointConnectionCaptor = new Captor<>();
-        private final Captor<String> endpointIdCaptor = new Captor<>();
-
-
-        public ConnectionLostCaptor(AuthorizationType authorizationType) {
-            setAuthorizationType(authorizationType);
-        }
-
-        public Boolean getEventFired() {
-            return eventFiredCaptor.getValue();
-        }
-
-        public CommandProcessor getCapturedCommandProcessor() {
-            return commandProcessorCaptor.getValue();
-        }
-
-        public EndpointConnection getCapturedEndpointConnection() {
-            return endpointConnectionCaptor.getValue();
-        }
-
-        public String getCapturedEndpointId() {
-            return endpointIdCaptor.getValue();
-        }
-
-        @Override
-        public void onConnectionLost(ConnectionLostEvent connectionLostEvent) {
-            eventFiredCaptor.capture(true);
-
-            commandProcessorCaptor.capture(connectionLostEvent.getCommandProcessor());
-            endpointConnectionCaptor.capture(connectionLostEvent.getEndpointConnection());
-            endpointIdCaptor.capture(connectionLostEvent.getEndpointId());
-        }
-    }
-    
     @Test
     public void testCommandInvoke(){
         CommandProcessor commandProcessor = new CommandProcessor();
@@ -169,9 +118,53 @@ public class CommandProcessorTest {
         commandProcessor.remoteInvoke(endpointConnection, "0 LOGIN\nendpoint-1");
         commandProcessor.remoteInvoke(endpointConnection, "1 PING");
 
-        Assert.assertEquals(endpointConnection.getCapturedMessages(), Arrays.asList(
+        Assert.assertEquals(Arrays.asList(
                 "0 LOGIN\nOK",
-                "1 PING"));
+                "1 PING"), endpointConnection.getCapturedMessages());
+    }
+
+    @Test
+    public void testHelpCommand(){
+        CommandProcessor commandProcessor = new CommandProcessor();
+
+
+        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
+        commandProcessor.addInvokeHandler(new EchoHandler("TEST-ECHO", AuthorizationType.ANY));
+
+
+        EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
+
+        commandProcessor.remoteInvoke(endpointConnection, "0 HELP");
+
+        Assert.assertEquals( Arrays.asList(
+                "0 HELP\n" +
+                "To get help use HELP command\n" +
+                "----------------------------\n" +
+                "List of available commands:\n" +
+                "LOGIN\n" +
+                "PING\n" +
+                "TEST-ECHO"), endpointConnection.getCapturedMessages());
+    }
+
+
+    @Test
+    public void testHelpCommandNoHeader(){
+        CommandProcessor commandProcessor = new CommandProcessor();
+
+
+        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
+        commandProcessor.addInvokeHandler(new EchoHandler("TEST-ECHO", AuthorizationType.ANY));
+
+
+        EndpointConnectionCaptor endpointConnection = new EndpointConnectionCaptor();
+
+        commandProcessor.remoteInvoke(endpointConnection, "0 HELP\nno-header");
+
+        Assert.assertEquals( Arrays.asList(
+                "0 HELP\n" +
+                "LOGIN\n" +
+                "PING\n" +
+                "TEST-ECHO"), endpointConnection.getCapturedMessages());
     }
 
     @Test

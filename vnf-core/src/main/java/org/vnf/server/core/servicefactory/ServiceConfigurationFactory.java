@@ -1,7 +1,6 @@
 package org.vnf.server.core.servicefactory;
 
 import org.vnf.server.core.commandprocessor.*;
-import org.vnf.server.core.commonservice.CommonServiceHandlersConfiguration;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -23,7 +22,13 @@ public class ServiceConfigurationFactory {
         return new ImmutableHandlersConfiguration(invokeHandlers, connectionLostHandlers);
     }
 
+    public void addInvokeHandler(InvokeHandler invokeHandler) {
+        invokeHandlers.add(invokeHandler);
+    }
 
+    public void addConnectionLostHandler(ConnectionLostHandler connectionLostHandler) {
+        connectionLostHandlers.add(connectionLostHandler);
+    }
 
     private void addMethodInvoke(Object target, Method method) {
 
@@ -37,7 +42,7 @@ public class ServiceConfigurationFactory {
 
         Invoke invokeAnnotation = method.getAnnotation(Invoke.class);
 
-        invokeHandlers.add(new MethodInvokeHandler(invokeAnnotation.value(), invokeAnnotation.authorizationType(), target, method));
+        addInvokeHandler(new MethodInvokeHandler(invokeAnnotation.value(), invokeAnnotation.authorizationType(), target, method));
     }
 
     private void addOnConnectionLost(Object target, Method method) {
@@ -47,11 +52,11 @@ public class ServiceConfigurationFactory {
 
         OnConnectionLost invokeAnnotation = method.getAnnotation(OnConnectionLost.class);
 
-        connectionLostHandlers.add(new MethodConnectionLostHandler(invokeAnnotation.authorizationType(),target, method));
+        addConnectionLostHandler(new MethodConnectionLostHandler(invokeAnnotation.authorizationType(),target, method));
     }
 
 
-    public void addService(Object serviceObject) {
+    public void addService(ServiceObject serviceObject) {
         Method[] methods = serviceObject.getClass().getMethods();
 
         for (Method method : methods) {
@@ -70,24 +75,52 @@ public class ServiceConfigurationFactory {
         Collection<ConnectionLostHandler> connectionLostHandlers = emptyIfNull(serviceHandlersConfiguration.getConnectionLostHandlers());
 
         for (InvokeHandler invokeHandler : invokeHandlers) {
-            this.invokeHandlers.add(invokeHandler);
+            addInvokeHandler(invokeHandler);
         }
 
         for (ConnectionLostHandler connectionLostHandler : connectionLostHandlers) {
-            this.connectionLostHandlers.add(connectionLostHandler);
+            addConnectionLostHandler(connectionLostHandler);
         }
     }
 
-    public static CommandProcessor createCommandProcessor(Object ... services) {
+    public void addHandler(Object handler) {
+        boolean typeExpected = false;
+
+        if(handler instanceof ServiceHandlersConfiguration) {
+            addServiceHandlersConfiguration((ServiceHandlersConfiguration) handler);
+            typeExpected = true;
+        }
+
+        if(handler instanceof InvokeHandler) {
+            addInvokeHandler((InvokeHandler) handler);
+            typeExpected = true;
+        }
+
+        if(handler instanceof ConnectionLostHandler) {
+            addConnectionLostHandler((ConnectionLostHandler) handler);
+            typeExpected = true;
+        }
+
+        if(handler instanceof ServiceObject) {
+            addService((ServiceObject) handler);
+            typeExpected = true;
+        }
+
+        if(!typeExpected) {
+            throw new RuntimeException("Handler type should be one of following types: " +
+                    "ServiceObject, ServiceHandlersConfiguration, InvokeHandler, ConnectionLostHandler");
+        }
+    }
+
+    public static CommandProcessor createCommandProcessor(Object ... handlers) {
         CommandProcessor commandProcessor = new CommandProcessor();
 
         ServiceConfigurationFactory factory = new ServiceConfigurationFactory();
 
-        for (Object service : services) {
-            factory.addService(service);
+        for (Object service : handlers) {
+            factory.addHandler(service);
         }
 
-        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
         commandProcessor.addServiceHandlers(factory.create());
 
         return commandProcessor;

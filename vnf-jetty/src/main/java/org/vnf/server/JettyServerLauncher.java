@@ -5,6 +5,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.jsr356.server.ServerContainer;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 import org.vnf.server.core.commandprocessor.CommandProcessor;
+import org.vnf.server.core.commonservice.CommonServiceHandlersConfiguration;
 import org.vnf.server.endpoint.ProcessorWebSocketEndpoint;
 
 import javax.websocket.server.ServerEndpointConfig;
@@ -14,6 +15,14 @@ import javax.websocket.server.ServerEndpointConfig;
  * Created by qik on 6/11/2017.
  */
 public class JettyServerLauncher {
+    private static ServerEndpointConfig createVnfWsEndpointConfig() {
+        CommandProcessor commandProcessor = new CommandProcessor();
+        commandProcessor.addServiceHandlers(new CommonServiceHandlersConfiguration());
+        commandProcessor.addServiceHandlers(new VnfServiceHandlersFactory().create());
+
+        return ProcessorWebSocketEndpoint.createEndpointConfig(commandProcessor, "/vnf-ws");
+    }
+
     public static void main(String[] args) throws Exception {
         Server server = new Server(8080);
 
@@ -23,12 +32,7 @@ public class JettyServerLauncher {
 
         ServerContainer container = WebSocketServerContainerInitializer.configureContext(context);
 
-        CommandProcessor commandProcessor = new CommandProcessor();
-        commandProcessor.addServiceHandlers(new VnfServiceHandlersFactory().create());
-
-        ServerEndpointConfig endpointConfig = ProcessorWebSocketEndpoint.createEndpointConfig(commandProcessor, "/vnf-ws");
-
-        container.addEndpoint(endpointConfig);
+        container.addEndpoint(createVnfWsEndpointConfig());
 
         server.start();
         server.join();

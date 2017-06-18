@@ -154,4 +154,8 @@ public class CommandProcessor {
             }
         }
     }
+
+    public Collection<InvokeHandler> getInvokeHandlers() {
+        return Collections.unmodifiableCollection(invokeHandlers.values());
+    }
 }
