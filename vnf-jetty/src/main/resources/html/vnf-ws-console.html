@@ -1,0 +1,56 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Virtual Network Framework Console</title>
+    <style>
+        #commandInput {
+            width: 300px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="log"></div>
+<div>
+    <textarea id="commandInput" onkeyup=""></textarea>
+</div>
+<div>
+    Ctrl+Enter to send
+</div>
+<script type="text/javascript">
+    var commandInput = document.getElementById("commandInput");
+    var logElement = document.getElementById("log");
+
+    var ws = new WebSocket("ws://" + location.host + "/vnf-ws");
+
+    function printLog(value) {
+        logElement.innerHTML = logElement.innerHTML +
+          "<PRE>" + value + "</PRE><HR/>";
+
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    window.onerror = function (errorMsg, url, lineNumber) {
+        printLog('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
+    }
+
+    ws.onmessage = function(evt) {
+        printLog(evt.data)
+    }
+
+    commandInput.onkeyup = function(evt) {
+        var ctrlEnter = evt.ctrlKey && evt.keyCode == 13;
+
+        if(!ctrlEnter) return;
+
+        printLog(commandInput.value)
+        ws.send(commandInput.value);
+    }
+
+
+</script>
+</body>
+</html>

@@ -30,6 +30,8 @@ public class JettyServerLauncher {
         context.setContextPath("/");
         server.setHandler(context);
 
+        context.addServlet(ClassLoaderResourceServlet.class, "/ui/*");
+
         ServerContainer container = WebSocketServerContainerInitializer.configureContext(context);
 
         container.addEndpoint(createVnfWsEndpointConfig());
