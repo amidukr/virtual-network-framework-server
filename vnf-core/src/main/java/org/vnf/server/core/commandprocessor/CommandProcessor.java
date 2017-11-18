@@ -150,6 +150,10 @@ public class CommandProcessor {
     public void connectionLost(EndpointConnection endpointConnection) {
         boolean authenticated = endpointConnection.isAuthenticated();
 
+        if(LOGGER.isDebugEnabled()){
+            LOGGER.debug("Connection lost: " + endpointConnection.getEndpointId());
+        }
+
         for (ConnectionLostHandler connectionLostHandler : connectionLostHandlers) {
             if(!authenticated && connectionLostHandler.getAuthorizationType() == AuthorizationType.AUTHENTICATED_ONLY) {
                 continue;
