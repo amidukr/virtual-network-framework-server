@@ -72,6 +72,10 @@ public class StoreRepository {
     }
 
     public Collection<StoreEntry> getEntriesByOwner(String owner) {
-        return unmodifiableCollection(storeOwnerEntriesMap.get(owner).getStoreEntries().keySet());
+        StoreOwnerEntries storeOwnerEntries = storeOwnerEntriesMap.get(owner);
+
+        if(storeOwnerEntries == null) return Collections.emptyList();
+
+        return unmodifiableCollection(storeOwnerEntries.getStoreEntries().keySet());
     }
 }
