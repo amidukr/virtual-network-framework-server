@@ -48,6 +48,10 @@ public class CommandProcessor {
         serviceConnectionLostHandlers.stream().forEach(this::addConnectionLostHandler);
     }
 
+    public EndpointConnection getEndpointConnection(String endpointId) {
+        return endpointConnections.get(endpointId);
+    }
+
     public boolean authenticate(EndpointConnection remoteConnection, String endpointId) {
 
         if(remoteConnection.isAuthenticated()) {
@@ -158,7 +162,10 @@ public class CommandProcessor {
             }
         }
 
-        endpointConnections.remove(endpointConnection.getEndpointId());
+        String endpointId = endpointConnection.getEndpointId();
+        if(endpointId != null) {
+            endpointConnections.remove(endpointId);
+        }
     }
 
     public Collection<InvokeHandler> getInvokeHandlers() {

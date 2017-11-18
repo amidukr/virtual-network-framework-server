@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vnf.server.core.commandprocessor.CommandEvent;
 import org.vnf.server.core.commandprocessor.CommandProcessor;
+import org.vnf.server.core.commandprocessor.EndpointConnection;
 import org.vnf.server.core.commandprocessor.InvocationResult;
 import org.vnf.server.core.servicefactory.Invoke;
 import org.vnf.server.core.servicefactory.ServiceObject;
@@ -11,6 +12,7 @@ import org.vnf.server.core.servicefactory.ServiceObject;
 import java.util.UUID;
 
 import static org.vnf.server.core.commandprocessor.InvocationResult.failed;
+import static org.vnf.server.core.commandprocessor.InvocationResult.succeed;
 
 /**
  * Created by qik on 6/10/2017.
@@ -40,6 +42,12 @@ public class MessageBrokerHandler implements ServiceObject {
 
         String recipientEndpoint = commandArgument.substring(0, endOfLine);
         String message = commandArgument.substring(endOfLine + 1);
+
+        EndpointConnection recipientEndpointConnection = commandProcessor.getEndpointConnection(recipientEndpoint);
+
+        if(recipientEndpointConnection == null) {
+            return succeed("SEND_TO_ENDPOINT_RECIPIENT_ENDPOINT_CANNOT_BE_FOUND");
+        }
 
         commandProcessor.pushMessage(recipientEndpoint, "ENDPOINT_MESSAGE", event.getEndpointId() + "\n" + message);
 

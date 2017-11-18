@@ -52,6 +52,7 @@ public class CommandProcessorTest {
         commandProcessor.remoteInvoke(endpointConnection, "0 LOGIN\nendpoint-1");
 
         Assert.assertEquals(endpointConnection.getCapturedMessages(), Arrays.asList("0 LOGIN\nOK"));
+        Assert.assertEquals(endpointConnection, commandProcessor.getEndpointConnection("endpoint-1"));
     }
 
     @Test

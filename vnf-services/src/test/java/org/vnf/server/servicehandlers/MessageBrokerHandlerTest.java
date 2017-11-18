@@ -73,4 +73,19 @@ public class MessageBrokerHandlerTest {
                         "CALL_ERROR\n2 SEND_TO_ENDPOINT\nSEND_TO_ENDPOINT_MALFORMED_ARGUMENT"),
                 endpoint.getCapturedMessages());
     }
+
+    @Test
+    public void testSendToNonexistentEndpoint() {
+        CommandProcessor processor = createCommandProcessor();
+
+        EndpointConnectionCaptor endpoint = new EndpointConnectionCaptor();
+
+        processor.remoteInvoke(endpoint, "0 LOGIN\nsender");
+        processor.remoteInvoke(endpoint, "1 SEND_TO_ENDPOINT\nnon-existent-endpoint\nmessage\nany\nlong");
+
+        Assert.assertEquals("Verifying endpoint message log", Arrays.asList(
+                        "0 LOGIN\nOK",
+                        "1 SEND_TO_ENDPOINT\nSEND_TO_ENDPOINT_RECIPIENT_ENDPOINT_CANNOT_BE_FOUND"),
+                endpoint.getCapturedMessages());
+    }
 }
