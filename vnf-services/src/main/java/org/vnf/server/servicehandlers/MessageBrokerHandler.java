@@ -1,10 +1,14 @@
 package org.vnf.server.servicehandlers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vnf.server.core.commandprocessor.CommandEvent;
 import org.vnf.server.core.commandprocessor.CommandProcessor;
 import org.vnf.server.core.commandprocessor.InvocationResult;
 import org.vnf.server.core.servicefactory.Invoke;
 import org.vnf.server.core.servicefactory.ServiceObject;
+
+import java.util.UUID;
 
 import static org.vnf.server.core.commandprocessor.InvocationResult.failed;
 
@@ -13,10 +17,16 @@ import static org.vnf.server.core.commandprocessor.InvocationResult.failed;
  */
 public class MessageBrokerHandler implements ServiceObject {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageBrokerHandler.class);
+
     @Invoke("SEND_TO_ENDPOINT")
     public InvocationResult sendToEndpoint(CommandEvent event) {
         CommandProcessor commandProcessor = event.getCommandProcessor();
         String commandArgument = event.getCommandArgument();
+
+        if(LOGGER.isDebugEnabled()){
+            LOGGER.debug("from: " + event.getEndpointId() + " SEND_TO_ENDPOINT " + commandArgument);
+        }
 
         if(commandArgument == null) {
             return failed("SEND_TO_ENDPOINT_ARGUMENT_CANNOT_BE_NULL");

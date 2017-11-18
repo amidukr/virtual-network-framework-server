@@ -58,6 +58,10 @@ public class CommandProcessor {
             return false;
         }
 
+        if(LOGGER.isDebugEnabled()){
+            LOGGER.debug("Endpoint '" + endpointId + "' is authenticated");
+        }
+
         remoteConnection.authenticate(endpointId);
 
         return true;
@@ -153,6 +157,8 @@ public class CommandProcessor {
                 LOGGER.error("Unexpected exception in connectionLost handler", e);
             }
         }
+
+        endpointConnections.remove(endpointConnection.getEndpointId());
     }
 
     public Collection<InvokeHandler> getInvokeHandlers() {
