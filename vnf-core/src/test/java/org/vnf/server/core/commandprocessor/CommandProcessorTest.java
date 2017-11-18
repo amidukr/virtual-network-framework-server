@@ -85,7 +85,7 @@ public class CommandProcessorTest {
         commandProcessor.remoteInvoke(endpointConnection2, "0 LOGIN\nendpoint");
 
         Assert.assertEquals(endpointConnection1.getCapturedMessages(), Arrays.asList("0 LOGIN\nOK"));
-        Assert.assertEquals(endpointConnection2.getCapturedMessages(), Arrays.asList("0 LOGIN\nNOT-OK-ALREADY-IN-USE"));
+        Assert.assertEquals(endpointConnection2.getCapturedMessages(), Arrays.asList("0 LOGIN\nNOT-OK-LOGIN-ALREADY-IN-USE"));
     }
 
     @Test
