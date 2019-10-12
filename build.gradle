@@ -1,6 +1,7 @@
-subprojects{
+subprojects {
     group   = "org.vnf.server"
     version = "0.1"
 
     apply plugin: "jacoco"
 }
+
