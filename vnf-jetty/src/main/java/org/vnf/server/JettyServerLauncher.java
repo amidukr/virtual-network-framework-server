@@ -2,7 +2,6 @@ package org.vnf.server;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.websocket.jsr356.server.ServerContainer;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 import org.vnf.server.core.commandprocessor.CommandProcessor;
 import org.vnf.server.core.commonservice.CommonServiceHandlersConfiguration;
@@ -32,9 +31,7 @@ public class JettyServerLauncher {
 
         context.addServlet(ClassLoaderResourceServlet.class, "/ui/*");
 
-        ServerContainer container = WebSocketServerContainerInitializer.configureContext(context);
-
-        container.addEndpoint(createVnfWsEndpointConfig());
+        WebSocketServerContainerInitializer.configure(context, (servletContext, serverContainer) -> serverContainer.addEndpoint(createVnfWsEndpointConfig()));
 
         server.start();
         server.join();

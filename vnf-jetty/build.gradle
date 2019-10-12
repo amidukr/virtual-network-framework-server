@@ -11,8 +11,8 @@ dependencies {
     compile project(":vnf-services")
     compile project(":vnf-websocket")
 
-    compile 'org.eclipse.jetty:jetty-server:9.4.5+'
-    compile 'org.eclipse.jetty.websocket:javax-websocket-server-impl:9.4.5+'
+    compile 'org.eclipse.jetty:jetty-server:9.4.21+'
+    compile 'org.eclipse.jetty.websocket:javax-websocket-server-impl:9.4.21+'
     compile 'ch.qos.logback:logback-classic:1.2.3'
 
     compile 'commons-io:commons-io:2.5'
