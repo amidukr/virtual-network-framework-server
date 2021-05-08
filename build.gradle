@@ -3,5 +3,15 @@ subprojects {
     version = "0.1"
 
     apply plugin: "jacoco"
+
+    repositories {
+        mavenCentral()
+    }
+
+    tasks.withType(JavaCompile) {
+        options.warnings = true
+        options.deprecation = true
+        options.compilerArgs += ["-Xlint:all"]
+    }
 }
 

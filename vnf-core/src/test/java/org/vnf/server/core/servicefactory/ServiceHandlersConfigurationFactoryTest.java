@@ -86,7 +86,7 @@ public class ServiceHandlersConfigurationFactoryTest {
 
         Assert.assertEquals("Found methods",
                 asList("invokeAny", "invokeAuthDefault", "invokeAuthOnly", "throwCommandException", "throwRuntime"),
-                new ArrayList(methods));
+                new ArrayList<>(methods));
 
         Assert.assertEquals(AuthorizationType.AUTHENTICATED_ONLY, invokeMap.get("invokeAuthDefault").getAuthorizationType());
         Assert.assertEquals(AuthorizationType.AUTHENTICATED_ONLY, invokeMap.get("invokeAuthOnly").getAuthorizationType());

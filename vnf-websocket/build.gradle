@@ -1,10 +1,4 @@
-apply plugin: 'maven'
 apply plugin: 'java-library'
-
-repositories {
-    jcenter()
-}
-
 
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.

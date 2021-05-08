@@ -12,6 +12,7 @@ import java.io.InputStream;
 /**
  * Created by qik on 6/18/2017.
  */
+@SuppressWarnings("serial")
 public class ClassLoaderResourceServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

@@ -11,12 +11,12 @@ import java.util.*;
  */
 public class WebSocketSessionMock implements Session {
 
-    private final List<MessageHandler.Whole> wholeMessageHandlers = new ArrayList<>();
+    private final List<MessageHandler.Whole<String>> wholeMessageHandlers = new ArrayList<>();
     private final RemoteAsyncEndpointMock asyncRemoteEndpoint = new RemoteAsyncEndpointMock();
     private final Map<String, Object> userProperties = new HashMap<>();
 
     public void fireMessage(String message) {
-        for (MessageHandler.Whole wholeMessageHandler : wholeMessageHandlers) {
+        for (MessageHandler.Whole<String> wholeMessageHandler : wholeMessageHandlers) {
             wholeMessageHandler.onMessage(message);
         }
     }
@@ -26,6 +26,7 @@ public class WebSocketSessionMock implements Session {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void addMessageHandler(MessageHandler handler) throws IllegalStateException {
         if(handler instanceof MessageHandler.Whole) {
             wholeMessageHandlers.add((MessageHandler.Whole) handler);

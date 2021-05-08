@@ -4,10 +4,8 @@ import org.vnf.server.repository.entities.StoreEntry;
 import org.vnf.server.repository.entities.StoreCollection;
 import org.vnf.server.repository.entities.StoreOwnerEntries;
 
-import java.security.acl.Owner;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Collections.unmodifiableCollection;

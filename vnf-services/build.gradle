@@ -1,9 +1,4 @@
-apply plugin: 'maven'
 apply plugin: 'java-library'
-
-repositories {
-    jcenter()
-}
 
 dependencies {
     api project(":vnf-core")
