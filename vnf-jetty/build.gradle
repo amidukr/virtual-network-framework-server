@@ -12,4 +12,4 @@ dependencies {
     implementation 'commons-io:commons-io:2.5'
 }
 
-mainClassName = "org.vnf.server.JettyServerLauncher"
+mainClassName = "org.amidukr.software.vnf.server.JettyServerLauncher"
